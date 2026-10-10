@@ -20,18 +20,18 @@ MOD_BITS = {
 
 
 def find_source_event():
-    """Găsește interfața evdev corectă: cea cu litere, nu cea de multimedia."""
+    """Find the correct evdev interface: the one with letters, not the multimedia one.."""
     for path in list_devices():
         dev = InputDevice(path)
         if dev.info.vendor == VID and dev.info.product == PID:
             caps = dev.capabilities().get(e.EV_KEY, [])
             if e.KEY_A in caps:
                 return dev
-    raise RuntimeError("Nu am găsit interfața evdev a tastaturii (VID/PID nepotrivit sau fără taste de literă)")
+    raise RuntimeError("Could not find the keyboard's evdev interface (mismatched VID/PID or no letter keys)")
 
 
 def find_hidraw_nodes():
-    """Găsește toate nodurile hidraw care aparțin de VID:PID-ul tastaturii."""
+    """Find all HID-raw nodes belonging to the keyboard's VID:PID."""
     context = pyudev.Context()
     nodes = []
     for device in context.list_devices(subsystem="hidraw"):
@@ -46,7 +46,7 @@ def find_hidraw_nodes():
         if vid == VID and pid == PID:
             nodes.append(device.device_node)
     if not nodes:
-        raise RuntimeError("Nu am găsit niciun nod hidraw pentru VID:PID dat")
+        raise RuntimeError("No hidraw node found for the given VID:PID.")
     return nodes
 
 
@@ -68,7 +68,7 @@ def hidraw_thread(path, ui, lock, state):
                         ui.syn()
                         state["prev"] = new_byte
         except (OSError, FileNotFoundError):
-            break  # Ieșim din buclă și închidem thread-ul dacă dispozitivul a fost scos
+            break  # We exit the loop and close the thread if the device has been removed.
 
 def main():
     src = find_source_event()
