@@ -15,7 +15,9 @@ The script grabs the original event device, listens directly to the raw HID data
 ### 1. System Dependencies
 You need a Linux system with Python 3, `libudev`, and permissions to access input and hidraw devices.
 
-### 2. Python Packages
-Install the required Python libraries via pip:
+### 2. Python Packages & Execution
+Install the required system packages for Python and run the script with administrator privileges (`sudo`):
+
 ```bash
-pip install pyudev evdev
+sudo apt install python3-evdev python3-pyudev
+sudo python3 fix-redragon-k503.py
